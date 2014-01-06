@@ -6,56 +6,44 @@ var socialcastUrl = process.env.SOCIALCAST_URL;
 var socialcastUser = process.env.SOCIALCAST_USER;
 var socialcastPassword = process.env.SOCIALCAST_PASS;
 
-var demo_url = "https://api.github.com/users/bekkopen/repos";
+var socialcastAuth = {
+    user: socialcastUser,
+    pass: socialcastPassword
+};
 
-app.get('/', function(req, res) {
-    request.get({
-        url: demo_url,
+var messages = [];
+setInterval(function() {
+    messages = [];
+}, 10000);
+
+function socialcastParams(url) {
+    return {
+        url: socialcastUrl + url,
         json: true,
-        headers: {
-            'User-Agent': 'request'
-        }
-    }, function(error, response, body) {
-        if (error) {
-            return handleError(error);
-        }
-        res.json(body);
-    });
-});
+        auth: socialcastAuth
+    };
+}
 
 app.get('/messages', function(req, res) {
 
-    request.get({
-        url: socialcastUrl + '/api/messages',
-        json: true,
-        'auth': {
-            'user': socialcastUser,
-            'pass': socialcastPassword
-        }
-    }, function(error, response, body) {
+    if (messages.length > 0) return res.json(messages);
+
+    request.get(socialcastParams('/api/messages'), function(error, response, body) {
         if (error) {
             return handleError(error);
         }
-
-        res.json(body);
+        messages = body;
+        res.json(messages);
     });
 
 });
 
 app.get('/message/:id', function(req, res) {
 
-    request.get({
-        url: socialcastUrl + '/api/messages/' + req.params.id,
-        json: true,
-        'auth': {
-            'user': socialcastUser,
-            'pass': socialcastPassword
-        }
-    }, function(error, response, body) {
+    request.get(socialcastParams('/api/messages/' + req.params.id), function(error, response, body) {
         if (error) {
             return handleError(error);
         }
-
         res.json(body);
     });
 
