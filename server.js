@@ -14,7 +14,7 @@ var socialcastAuth = {
 var messages = [];
 setInterval(function() {
     messages = [];
-}, 10000);
+}, 120000);
 
 function socialcastParams(url) {
     return {
@@ -52,7 +52,6 @@ app.get('/message/:id', function(req, res) {
 function handleError(err) {
     console.log("an error has occured. keep calm and carry on.");
 }
-
 
 // if on heroku use heroku port.
 var port = process.env.PORT || 1339;
