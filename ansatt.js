@@ -12,12 +12,12 @@ function employeeParams(url) {
 }
 
 function all() {
-    request.get(employeeParams('/all'), function(error, response, employees) {
+    request.get(employeeParams('/all'), function(error, response, employeesResponse) {
         if (error) {
             return console.log(error);
         }
 
-        var all = employees.map(function(employee) {
+        var all = employeesResponse.map(function(employee) {
             var id = employee.Id;
 
             return function(callback) {
@@ -38,7 +38,8 @@ function all() {
 }
 
 function get(name) {
-    return emplyees[name];
+    console.log(name, employees[name]);
+    return employees[name];
 }
 
 module.exports = {
