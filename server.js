@@ -1,5 +1,6 @@
 var express = require('express');
 var socialcast = require('./socialcast');
+var employee = require('./ansatt');
 var app = express();
 
 app.get('/messages', function(req, res) {
@@ -26,6 +27,8 @@ function handleError(err) {
     console.log("an error has occured. keep calm and carry on.");
     console.error(err);
 }
+
+employee.all();
 
 // if on heroku use heroku port.
 var port = process.env.PORT || 1339;
