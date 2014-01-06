@@ -9,7 +9,7 @@ app.get('/messages', function(req, res) {
 
     socialcast.messages(function(error, messages) {
         if (error) return handleError(error);
-        
+
         messages.forEach(function(message) {
             if (!message.user) return;
 
@@ -17,6 +17,8 @@ app.get('/messages', function(req, res) {
             if (user) {
                 message.user.senioritet = user.Seniority;
                 message.user.avdeling = user.Department;
+            } else {
+                console.log('did not find', user);
             }
         });
 
@@ -35,6 +37,8 @@ app.get('/message/:id', function(req, res) {
         if (user) {
             message.user.senioritet = user.Seniority;
             message.user.avdeling = user.Department;
+        } else {
+            console.log('did not find', user);
         }
 
         res.json(message);

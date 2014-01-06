@@ -1,5 +1,6 @@
 var request = require('request');
 var async = require('async');
+var _ = require('underscore');
 
 var employeeUrl = process.env.ANSATTLISTE_URL;
 var employees = {};
@@ -27,19 +28,22 @@ function all() {
             };
         });
 
-
         async.parallel(all, function(error, employeesResponse) {
+            console.log('done');
             employeesResponse.forEach(function(employee) {
                 employees[employee.Name] = employee;
             });
-            console.log('done');
         });
     });
 }
 
 function get(name) {
-    console.log(name, employees[name]);
-    return employees[name];
+    if (employees[name]) return employees[name];
+
+    return _.find(employees, function(ansatt) {
+        var i = _.intersection(name.split(" "), ansatt.Name.split(" "));
+        return i.length >= 2;
+    });
 }
 
 module.exports = {

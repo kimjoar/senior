@@ -71,7 +71,6 @@ function addLikesToMessage(message, callback){
         if (error) {
             return callback(error);
         }
-        console.log('LIKES:', likes);
         message.likes = likes;
         callback(null, likes);
     });
