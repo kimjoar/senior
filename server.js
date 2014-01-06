@@ -11,10 +11,22 @@ var socialcastAuth = {
     pass: socialcastPassword
 };
 
-var messages = [];
-setInterval(function() {
-    messages = [];
-}, 120000);
+function messages() {
+    var messages = [];
+
+    setInterval(function() {
+        messages = [];
+    }, 120000);
+
+    return function(newMessages) {
+        if (newMessages) {
+            messages = newMessages;
+        }
+        return messages;
+    }
+}
+
+var socialcastMessages = messages();
 
 function socialcastParams(url) {
     return {
@@ -26,14 +38,13 @@ function socialcastParams(url) {
 
 app.get('/messages', function(req, res) {
 
-    if (messages.length > 0) return res.json(messages);
+    if (socialcastMessages().length > 0) return res.json(socialcastMessages());
 
     request.get(socialcastParams('/api/messages'), function(error, response, body) {
         if (error) {
             return handleError(error);
         }
-        messages = body;
-        res.json(messages);
+        res.json(socialcastMessages(body));
     });
 
 });
