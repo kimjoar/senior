@@ -20,6 +20,7 @@
     "express": "~3.4.7",
     "request": "~2.30.0",
     "async": "*",
-    "underscore": "~1.5.2"
+    "underscore": "~1.5.2",
+    "jade": "~1.0.2"
   }
 }

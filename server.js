@@ -5,6 +5,9 @@ var app = express();
 
 app.use(express.static(__dirname + '/public'));
 
+app.set('view engine', 'jade');
+app.set('views', __dirname + '/views');
+
 app.get('/messages', function(req, res) {
 
     socialcast.messages(function(error, messages) {
@@ -45,6 +48,13 @@ app.get('/message/:id', function(req, res) {
     });
 
 });
+
+app.get('/', function (req, res){
+    socialcast.messages(function(error, messages) {
+        if (error) return handleError(error);
+        res.render('index', {messages:messages});
+    });    
+});    
 
 function handleError(err) {
     console.log("an error has occured. keep calm and carry on.");

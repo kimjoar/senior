@@ -1,0 +1,16 @@
+doctype html
+html
+	head
+		title Snacks
+		link(rel='stylesheet', href='/css/uikit.gradient.min.css')
+	body
+		.uk-container
+			h1 Socialcast ++
+
+			ul.uk-list
+				each message in messages
+					li 
+						div.uk-panel.uk-panel-box
+							.uk-panel-badge.uk-badge.uk-badge-info #{message.likes.length}
+							h3.uk-panel-title #{message.user.name}
+							| #{message.body}
