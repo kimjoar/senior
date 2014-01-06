@@ -1,2 +1,1 @@
-senior-bootcamp-archetype-2014
-==============================
+http://bekk-senior.herokuapp.com/
