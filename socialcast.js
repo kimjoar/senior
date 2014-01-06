@@ -10,22 +10,13 @@ var socialcastAuth = {
     pass: socialcastPassword
 };
 
-function messageHandler() {
-    var messages = [];
+var cachedLikes = {};
 
-    setInterval(function() {
-        messages = [];
-    }, 120000);
+var socialcastMessages = [];
 
-    return function(newMessages) {
-        if (newMessages) {
-            messages = newMessages;
-        }
-        return messages;
-    };
-}
-
-var socialcastMessages = messageHandler();
+setInterval(function() {
+    socialcastMessages.length = 0;
+}, 120000);
 
 function socialcastParams(url) {
     return {
@@ -36,22 +27,24 @@ function socialcastParams(url) {
 }
 
 function messages(callback) {
-	if (socialcastMessages().length > 0) return callback(null, socialcastMessages());
+	if (socialcastMessages.length > 0) return callback(null, socialcastMessages);
 
     request.get(socialcastParams('/api/messages'), function(error, response, body) {
         if (error) {
             return callback(error);
         }
-        var likeRequests = [];
-        body.forEach(function(message){
-            likeRequests.push(function(callback) {
+
+        var reqs = body.map(function(message){
+            return function(callback) {
                 addLikesToMessage(message, function(likes) {
                     callback(null, likes);
                 });
-            })
+            };
         });
-        async.parallel(likeRequests, function(){
-            callback(null, socialcastMessages(body));
+
+        async.parallel(reqs, function(){
+            socialcastMessages = body;
+            callback(null, socialcastMessages);
         });
     });
 }
@@ -67,10 +60,17 @@ function message(id, callback) {
 }
 
 function addLikesToMessage(message, callback){
+    if (cachedLikes[message.id]) {
+        var l = cachedLikes[message.id];
+        message.likes = l;
+        callback(null, l);
+    }
+
     request.get(socialcastParams('/api/messages/' +  message.id + '/likes'), function(error, response, likes) {
         if (error) {
             return callback(error);
         }
+        cachedLikes[message.id] = likes;
         message.likes = likes;
         callback(null, likes);
     });
