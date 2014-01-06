@@ -1,5 +1,5 @@
-var request = require('request');
 var async = require('async');
+var cachedRequest = require('./cachedRequest');
 
 var socialcastUrl = process.env.SOCIALCAST_URL;
 var socialcastUser = process.env.SOCIALCAST_USER;
@@ -10,14 +10,6 @@ var socialcastAuth = {
     pass: socialcastPassword
 };
 
-var cachedLikes = {};
-
-var socialcastMessages = [];
-
-setInterval(function() {
-    socialcastMessages.length = 0;
-}, 120000);
-
 function socialcastParams(url) {
     return {
         url: socialcastUrl + url,
@@ -27,9 +19,7 @@ function socialcastParams(url) {
 }
 
 function messages(callback) {
-	if (socialcastMessages.length > 0) return callback(null, socialcastMessages);
-
-    request.get(socialcastParams('/api/messages'), function(error, response, body) {
+    cachedRequest(socialcastParams('/api/messages'), function(error, response, body) {
         if (error) {
             return callback(error);
         }
@@ -50,7 +40,7 @@ function messages(callback) {
 }
 
 function message(id, callback) {
-	request.get(socialcastParams('/api/messages/' + id), function(error, response, body) {
+	cachedRequest(socialcastParams('/api/messages/' + id), function(error, response, body) {
         if (error) return callback(error);
         addLikesToMessage(body, function(){
             if (error) return callback(error);
@@ -61,17 +51,10 @@ function message(id, callback) {
 
 
 function addLikesToMessage(message, callback){
-    if (cachedLikes[message.id]) {
-        var l = cachedLikes[message.id];
-        message.likes = l;
-        return callback(null, l);
-    }
-
-    request.get(socialcastParams('/api/messages/' +  message.id + '/likes'), function(error, response, likes) {
+    cachedRequest(socialcastParams('/api/messages/' +  message.id + '/likes'), function(error, response, likes) {
         if (error) {
             return callback(error);
         }
-        cachedLikes[message.id] = likes;
         message.likes = likes;
         callback(null, likes);
     });
