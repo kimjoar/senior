@@ -1,4 +1,5 @@
 var request = require('request');
+var async = require('async');
 
 var socialcastUrl = process.env.SOCIALCAST_URL;
 var socialcastUser = process.env.SOCIALCAST_USER;
@@ -41,16 +42,38 @@ function messages(callback) {
         if (error) {
             return callback(error);
         }
-        callback(null, socialcastMessages(body));
+        var likeRequests = [];
+        body.forEach(function(message){
+            likeRequests.push(function(callback) {
+                addLikesToMessage(message, function(likes) {
+                    callback(null, likes);
+                });
+            })
+        });
+        async.parallel(likeRequests, function(){
+            callback(null, socialcastMessages(body));
+        });
     });
 }
 
 function message(id, callback) {
 	request.get(socialcastParams('/api/messages/' + id), function(error, response, body) {
+        if (error) return callback(error);
+        addLikesToMessage(body, function(){
+            if (error) return callback(error);
+            callback(null, body);
+        });
+    });
+}
+
+function addLikesToMessage(message, callback){
+    request.get(socialcastParams('/api/messages/' +  message.id + '/likes'), function(error, response, likes) {
         if (error) {
             return callback(error);
         }
-        callback(null, body);
+        console.log('LIKES:', likes);
+        message.likes = likes;
+        callback(null, likes);
     });
 }
 
