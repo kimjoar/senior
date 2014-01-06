@@ -35,7 +35,7 @@ function socialcastParams(url) {
 }
 
 function messages(callback) {
-	if (socialcastMessages().length > 0) return res.json(socialcastMessages());
+	if (socialcastMessages().length > 0) return callback(null, socialcastMessages());
 
     request.get(socialcastParams('/api/messages'), function(error, response, body) {
         if (error) {
