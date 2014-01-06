@@ -3,6 +3,8 @@ var socialcast = require('./socialcast');
 var employee = require('./ansatt');
 var app = express();
 
+app.use(express.static(__dirname + '/public'));
+
 app.get('/messages', function(req, res) {
 
     socialcast.messages(function(error, messages) {
