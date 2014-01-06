@@ -64,7 +64,7 @@ function addLikesToMessage(message, callback){
     if (cachedLikes[message.id]) {
         var l = cachedLikes[message.id];
         message.likes = l;
-        callback(null, l);
+        return callback(null, l);
     }
 
     request.get(socialcastParams('/api/messages/' +  message.id + '/likes'), function(error, response, likes) {
