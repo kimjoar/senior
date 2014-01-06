@@ -1,4 +1,4 @@
-var request = require('request');
+var cachedRequest = require('./cachedRequest');
 var async = require('async');
 var _ = require('underscore');
 
@@ -13,7 +13,7 @@ function employeeParams(url) {
 }
 
 function all() {
-    request.get(employeeParams('/all'), function(error, response, employeesResponse) {
+    cachedRequest(employeeParams('/all'), function(error, response, employeesResponse) {
         if (error) {
             return console.log(error);
         }
@@ -22,7 +22,7 @@ function all() {
             var id = employee.Id;
 
             return function(callback) {
-                request.get(employeeParams('/employee/'+id), function(error, response, body) {
+                cachedRequest(employeeParams('/employee/'+id), function(error, response, body) {
                     callback(error, body[0]);
                 });
             };
