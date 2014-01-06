@@ -41,8 +41,8 @@ function get(name) {
     if (employees[name]) return employees[name];
 
     return _.find(employees, function(ansatt) {
-        var i = _.intersection(name.split(" "), ansatt.Name.split(" "));
-        return i.length >= 2;
+        var matches = _.intersection(name.split(" "), ansatt.Name.split(" "));
+        return matches.length >= 2;
     });
 }
 
