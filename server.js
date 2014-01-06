@@ -37,19 +37,26 @@ app.get('/messages', function(req, res) {
             return handleError(error);
         }
 
-        request.get({
-            url: socialcastUrl + '/api/messages?page=2',
-            json: true,
-            'auth': {
-                'user': socialcastUser,
-                'pass': socialcastPassword
-            }
-        }, function(error, response, body2) {
-            if (error) {
-                return handleError(error);
-            }
-            res.json(body.concat(body2));
-        });
+        res.json(body);
+    });
+
+});
+
+app.get('/message/:id', function(req, res) {
+
+    request.get({
+        url: socialcastUrl + '/api/messages/' + req.params.id,
+        json: true,
+        'auth': {
+            'user': socialcastUser,
+            'pass': socialcastPassword
+        }
+    }, function(error, response, body) {
+        if (error) {
+            return handleError(error);
+        }
+
+        res.json(body);
     });
 
 });
