@@ -23,7 +23,7 @@ exports.start = function(callback) {
 	collection().count(function(error, count) {
 		if (count > 0) return callback(null);
 
-		async.eachLimit(_.range(1, 100), 5,
+		async.eachLimit(_.range(1, 50), 5,
 			fetchFromSocialcastAndSaveToDB,
 			function(error) {
 				callback(error);
