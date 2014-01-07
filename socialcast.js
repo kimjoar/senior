@@ -32,10 +32,7 @@ function messages(page, callback) {
         }
 
         var reqs = body.map(function(message){
-            return function(cb) {
-                console.log('add extra info', message);
-                addExtraInfo(message, cb);
-            };
+            return _.partial(addExtraInfo, message);
         });
 
         async.parallel(reqs, function(){
@@ -71,7 +68,6 @@ function addUserInfo(message, callback) {
 function message(id, callback) {
 	cachedRequest(socialcastParams('/api/messages/' + id), function(error, response, body) {
         if (error) return callback(error);
-        console.log('message', id, body);
         addExtraInfo(body, function() {
             callback(null, body);
         });
