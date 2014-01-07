@@ -4,6 +4,7 @@ var socialcast = require('./socialcast');
 var employee = require('./ansatt');
 var db = require('./db');
 var veivesenet = require('./veivesenet');
+var aggregate = require('./aggregateMagicBullshit');
 
 var app = express();
 
@@ -98,6 +99,17 @@ app.post('/push', function(req, res) {
 
     res.send(200);
 
+});
+
+app.get('/aggregate_start', function(req, res) {
+    aggregate.start(function(error) {
+        if (error) {
+            console.log("Aggregation failed", error);
+            return res.send(500);
+        }
+    });
+
+    res.send("Aggregering startet");
 });
 
 function handleError(err) {
