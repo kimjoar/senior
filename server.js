@@ -38,7 +38,12 @@ app.get('/message/:id', function(req, res) {
 
     var id = req.params.id;
 
-    var found = _.findWhere(pushedMessages, { id: id });
+    _.each(pushedMessages, function(message) {
+        if (message.id == id) {
+            found = message;
+        }
+    });
+
     console.log('found for', id, found);
     if (found) return res.json(found);
 
