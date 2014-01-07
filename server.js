@@ -4,6 +4,7 @@ var employee = require('./ansatt');
 var app = express();
 
 app.use(express.static(__dirname + '/public'));
+app.use(express.bodyParser());
 
 app.set('view engine', 'jade');
 app.set('views', __dirname + '/views');
@@ -55,6 +56,13 @@ app.get('/', function (req, res){
         res.render('index', {messages:messages});
     });    
 });    
+
+app.post('/push', function(req, res) {
+
+    var data = req.body;
+    console.log(data);
+
+});
 
 function handleError(err) {
     console.log("an error has occured. keep calm and carry on.");
