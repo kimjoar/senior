@@ -14,19 +14,11 @@ function employeeParams(url) {
 }
 
 function fetchEmployeesFromDatabase(callback) {
-    employeeService.all(function(error, employees){
-        if(error) callback(error);
-        else callback(null, employees);
-    });
+    employeeService.all(callback);
 }
 
-function fetchEmployeesFromAnsattListeService(callback) {
-    cachedRequest(employeeParams('/all'), function(error, response, employeesResponse) {
-        if (error) {
-            return console.log(error);
-        }
-
-        var all = employeesResponse.map(function(employee) {
+function employeesRequests(employees){
+    return employees.map(function(employee) {
             var id = employee.Id;
 
             return function(callback) {
@@ -35,12 +27,21 @@ function fetchEmployeesFromAnsattListeService(callback) {
                 });
             };
         });
+}
 
-        async.parallel(all, function(error, employeesResponse) {
+function fetchEmployeesFromAnsattListeService(callback) {
+    cachedRequest(employeeParams('/all'), function(error, response, employeesResponse) {
+        if (error) {
+            return console.log(error);
+        }
+
+        async.parallel(employeesRequests(employeesResponse), function(error, employeesResponse) {
             console.log('done');
+
             employeeService.store(employeesResponse, function(error){
-                if(error) callback(error);
+                if(error) console.log("Store failed", error);
             });
+            
             employeesResponse.forEach(function(employee) {
                 employees[employee.Name] = employee;
             });

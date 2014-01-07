@@ -1,17 +1,11 @@
 var db = require('./db');
 
 function store(employees, callback){
-	db.collection('employees').insert(employees, function(error, results){
-		if(error) callback(error);
-		else callback(null);
-	});
+	db.collection('employees').insert(employees, callback);
 }
 
 function all(callback) {
-	db.collection('employees').find().toArray(function(error, result){
-		if(error) callback(error);
-		else callback(null, result);
-	});
+	db.collection('employees').find().toArray(callback);
 }
 
 module.exports = {
