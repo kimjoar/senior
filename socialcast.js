@@ -2,6 +2,7 @@ var async = require('async');
 var cachedRequest = require('./cachedRequest');
 var employee = require('./ansatt');
 var veivesenet = require('./veivesenet');
+var _ = require('underscore');
 
 var socialcastUrl = process.env.SOCIALCAST_URL;
 var socialcastUser = process.env.SOCIALCAST_USER;
@@ -60,7 +61,7 @@ function addUserInfo(message, callback) {
         if (user) {
             message.user.senioritet = user.Seniority;
             message.user.avdeling = user.Department;
-            addBilInfo(user.Cars, message, callback);
+            if (user.Cars) addBilInfo(user.Cars, message, callback);
         }
     }
 }
