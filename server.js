@@ -9,6 +9,8 @@ app.use(express.bodyParser());
 app.set('view engine', 'jade');
 app.set('views', __dirname + '/views');
 
+var pushedMessages = [];
+
 app.get('/messages', function(req, res) {
 
     socialcast.messages(function(error, messages) {
@@ -33,7 +35,12 @@ app.get('/messages', function(req, res) {
 
 app.get('/message/:id', function(req, res) {
 
-    socialcast.message(req.params.id, function(error, message) {
+    var id = req.params.id;
+
+    var found = _.findWhere(pushedMessages, { id: id });
+    if (found) return res.json(found);
+
+    socialcast.message(id, function(error, message) {
         if (error) return handleError(error);
         if (!message || !message.user) res.json(message);
 
@@ -59,8 +66,14 @@ app.get('/', function (req, res){
 
 app.post('/push', function(req, res) {
 
-    var data = req.body;
-    console.log(data);
+    var body = req.body;
+
+    if (body.data) {
+        var json = JSON.parse(req.body.data);
+        pushedMessages.push(json);
+    }
+
+    res.send(204);
 
 });
 
