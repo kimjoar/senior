@@ -1,6 +1,16 @@
 var cachedRequest = require('./cachedRequest');
 var async = require('async');
 var _ = require('underscore');
+var MongoClient = require('mongodb').MongoClient;
+
+var mongoUri = process.env.MONGOLAB_URI;
+
+var employeeCollection;
+MongoClient.connect(mongoUri, function(error, db) {
+    if (error) throw error;
+    employeeCollection = db.collection('employees');
+    all();
+});
 
 var employeeUrl = process.env.ANSATTLISTE_URL;
 var employees = {};
@@ -12,7 +22,13 @@ function employeeParams(url) {
     };
 }
 
-function all() {
+function fromDB(callback) {
+    employeeCollection.find().toArray(function(error, results) {
+        callback(error, results);
+    });
+}
+
+function fromUrl(callback) {
     cachedRequest(employeeParams('/all'), function(error, response, employeesResponse) {
         if (error) {
             return console.log(error);
@@ -30,10 +46,27 @@ function all() {
 
         async.parallel(all, function(error, employeesResponse) {
             console.log('done');
+            employeeCollection.insert(employeesResponse, function(error, results) {
+                if (error) console.error("Error inserting in mongodb", error);
+                else console.log("Inserted %s", results.length);
+            });
             employeesResponse.forEach(function(employee) {
                 employees[employee.Name] = employee;
             });
         });
+    });
+}
+
+function all() {
+    fromDB(function(error, dbEmployees) {
+        if (!error && dbEmployees.length > 0) {
+            console.log("Employees found in database");
+            dbEmployees.forEach(function(employee) { employees[employee.Name] = employee; });
+        }
+        else {
+            console.log("Employees not found in database, getting from web service");
+            fromUrl();
+        }
     });
 }
 

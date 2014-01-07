@@ -53,15 +53,13 @@ app.get('/', function (req, res){
     socialcast.messages(function(error, messages) {
         if (error) return handleError(error);
         res.render('index', {messages:messages});
-    });    
-});    
+    });
+});
 
 function handleError(err) {
     console.log("an error has occured. keep calm and carry on.");
     console.error(err);
 }
-
-employee.all();
 
 // if on heroku use heroku port.
 var port = process.env.PORT || 1339;
