@@ -30,7 +30,7 @@ app.get('/messages', function(req, res) {
                 message.user.avdeling = user.Department;
                 addBilInfo(user.Cars, message);
             } else {
-                console.log('did not find', user);
+                console.log('did not find', message.user.name);
             }
         });
 
