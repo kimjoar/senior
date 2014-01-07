@@ -33,7 +33,9 @@ function messages(page, callback) {
         }
 
         var reqs = body.map(function(message){
-            return _.partial(addExtraInfo, message);
+            return function(callback) {
+                addExtraInfo(message, callback);
+            }
         });
 
         async.parallel(reqs, function(){
@@ -61,7 +63,12 @@ function addUserInfo(message, callback) {
         if (user) {
             message.user.senioritet = user.Seniority;
             message.user.avdeling = user.Department;
-            if (user.Cars) addBilInfo(user.Cars, message, callback);
+            if (user.Cars) {
+                addBilInfo(user.Cars, message, callback);
+            } else {
+                callback(null);
+                console.log('no car', message.user.name);
+            }
         }
     }
 }
