@@ -38,6 +38,7 @@ app.get('/message/:id', function(req, res) {
     var id = req.params.id;
 
     var found = _.findWhere(pushedMessages, { id: id });
+    console.log('found for', id, found);
     if (found) return res.json(found);
 
     socialcast.message(id, function(error, message) {
@@ -70,6 +71,7 @@ app.post('/push', function(req, res) {
 
     if (body.data) {
         var json = JSON.parse(req.body.data);
+        console.log("json", json);
         pushedMessages.push(json);
     }
 
