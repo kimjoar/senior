@@ -1,7 +1,7 @@
 var cachedRequest = require('./cachedRequest');
 var async = require('async');
 var _ = require('underscore');
-var db = require('./db');
+var employeeService = require('./employeeService');
 
 var employeeUrl = process.env.ANSATTLISTE_URL;
 var employees = {};
@@ -14,7 +14,10 @@ function employeeParams(url) {
 }
 
 function fetchEmployeesFromDatabase(callback) {
-    db.collection('employees').find().toArray(callback);
+    employeeService.all(function(error, employees){
+        if(error) callback(error);
+        else callback(null, employees);
+    });
 }
 
 function fetchEmployeesFromAnsattListeService(callback) {
@@ -35,9 +38,8 @@ function fetchEmployeesFromAnsattListeService(callback) {
 
         async.parallel(all, function(error, employeesResponse) {
             console.log('done');
-            db.collection('employees').insert(employeesResponse, function(error, results) {
-                if (error) console.error("Error inserting in mongodb", error);
-                else console.log("Inserted %s", results.length);
+            employeeService.store(employeesResponse, function(error){
+                if(error) callback(error);
             });
             employeesResponse.forEach(function(employee) {
                 employees[employee.Name] = employee;
