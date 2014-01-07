@@ -40,7 +40,7 @@ app.get('/messages', function(req, res) {
 });
 
 function addBilInfo(regNr, message){
-    veivesenet.bilInfo(regNr, function(bilInfo) {
+    veivesenet.bilInfo(regNr, function(error, bilInfo) {
         message.user.bilmerke = bilInfo['Merke og modell'];
         message.user.drivstofftype = bilInfo['Drivstoff'];
     });
