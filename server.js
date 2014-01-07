@@ -1,4 +1,5 @@
 var express = require('express');
+var _ = require('underscore');
 var socialcast = require('./socialcast');
 var employee = require('./ansatt');
 var app = express();
