@@ -10,19 +10,18 @@ function veivesenetParams(url) {
     };
 }
 
-function bilInfo(regNr){
-	var bilInfo = {};
-	cachedRequest(veivesenetParams('/api/' + regNr), function(error, response, body) {
+function bilInfo(regNr, callback){
+    cachedRequest(veivesenetParams('/api/' + regNr), function(error, response, body) {
         if (error) return callback(error);
-		
-		_.each(body, function(listeElement) {
-		  bilInfo[listeElement.name] = listeElement.value;
-		});
 
+        _.each(body, function(info) {
+          bilInfo[info.name] = info.value;
+        });
+
+        callback(null, bilInfo);
     });
-    return bilInfo;
 }
 
 module.exports = {
-	bilInfo: bilInfo
+    bilInfo: bilInfo
 }
