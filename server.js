@@ -2,6 +2,7 @@ var express = require('express');
 var _ = require('underscore');
 var socialcast = require('./socialcast');
 var employee = require('./ansatt');
+var db = require('./db');
 var app = express();
 
 app.use(express.static(__dirname + '/public'));
@@ -92,6 +93,11 @@ function handleError(err) {
     console.error(err);
 }
 
-// if on heroku use heroku port.
-var port = process.env.PORT || 1339;
-app.listen(port);
+db.connect(function(error) {
+    if (error) throw new Error("Could not get database connection", error);
+
+    var port = process.env.PORT || 1339;
+    app.listen(port);
+
+    employee.all();
+});

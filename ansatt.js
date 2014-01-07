@@ -1,16 +1,7 @@
 var cachedRequest = require('./cachedRequest');
 var async = require('async');
 var _ = require('underscore');
-var MongoClient = require('mongodb').MongoClient;
-
-var mongoUri = process.env.MONGOLAB_URI || "mongodb://127.0.0.1:27017/bekk-senior";
-
-var employeeCollection;
-MongoClient.connect(mongoUri, function(error, db) {
-    if (error) throw error;
-    employeeCollection = db.collection('employees');
-    all();
-});
+var db = require('./db');
 
 var employeeUrl = process.env.ANSATTLISTE_URL;
 var employees = {};
@@ -22,13 +13,11 @@ function employeeParams(url) {
     };
 }
 
-function fromDB(callback) {
-    employeeCollection.find().toArray(function(error, results) {
-        callback(error, results);
-    });
+function fetchEmployeesFromDatabase(callback) {
+    db.collection('employees').find().toArray(callback);
 }
 
-function fromUrl(callback) {
+function fetchEmployeesFromAnsattListeService(callback) {
     cachedRequest(employeeParams('/all'), function(error, response, employeesResponse) {
         if (error) {
             return console.log(error);
@@ -46,7 +35,7 @@ function fromUrl(callback) {
 
         async.parallel(all, function(error, employeesResponse) {
             console.log('done');
-            employeeCollection.insert(employeesResponse, function(error, results) {
+            db.collection('employees').insert(employeesResponse, function(error, results) {
                 if (error) console.error("Error inserting in mongodb", error);
                 else console.log("Inserted %s", results.length);
             });
@@ -58,14 +47,14 @@ function fromUrl(callback) {
 }
 
 function all() {
-    fromDB(function(error, dbEmployees) {
+    fetchEmployeesFromDatabase(function(error, dbEmployees) {
         if (!error && dbEmployees.length > 0) {
             console.log("Employees found in database");
             dbEmployees.forEach(function(employee) { employees[employee.Name] = employee; });
         }
         else {
             console.log("Employees not found in database, getting from web service");
-            fromUrl();
+            fetchEmployeesFromAnsattListeService();
         }
     });
 }
