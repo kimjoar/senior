@@ -74,6 +74,16 @@ app.get('/aggregate_start', function(req, res) {
     res.send("Aggregering startet");
 });
 
+app.get('/cars', function(req, res) {
+    collection().aggregate([{$group: {_id: "$user.drivstofftype", posts: {$sum: 1}}}, {$sort: {"posts": 1}}], function(err, result) {
+        res.json(result);
+    });
+});
+
+function collection() {
+    return db.collection('scaggregate');
+}
+
 function handleError(err) {
     console.log("an error has occured. keep calm and carry on.");
     console.error(err);
