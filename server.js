@@ -41,8 +41,8 @@ app.get('/messages', function(req, res) {
 function addBilInfo(regNr, message){
     var bilInfo = veivesenet.bilInfo(regNr);
     if(bilInfo) {
-        message.user.bilmerke = bilInfo['Drivstoff'];
-        message.user.drivstofftype = bilInfo['Merke og modell'];
+        message.user.bilmerke = bilInfo['Merke og modell'];
+        message.user.drivstofftype = bilInfo['Drivstoff'];
     }
 }
 
