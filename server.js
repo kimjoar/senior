@@ -3,6 +3,8 @@ var _ = require('underscore');
 var socialcast = require('./socialcast');
 var employee = require('./ansatt');
 var db = require('./db');
+var veivesenet = require('./veivesenet');
+
 var app = express();
 
 app.use(express.static(__dirname + '/public'));
@@ -25,6 +27,7 @@ app.get('/messages', function(req, res) {
             if (user) {
                 message.user.senioritet = user.Seniority;
                 message.user.avdeling = user.Department;
+                addBilInfo(user.Cars, message);
             } else {
                 console.log('did not find', user);
             }
@@ -34,6 +37,14 @@ app.get('/messages', function(req, res) {
     });
 
 });
+
+function addBilInfo(regNr, message){
+    var bilInfo = veivesenet.bilInfo(regNr);
+    if(bilInfo) {
+        message.user.bilmerke = bilInfo['Drivstoff'];
+        message.user.drivstofftype = bilInfo['Merke og modell'];
+    }
+}
 
 app.get('/message/:id', function(req, res) {
 
@@ -58,6 +69,7 @@ app.get('/message/:id', function(req, res) {
         if (user) {
             message.user.senioritet = user.Seniority;
             message.user.avdeling = user.Department;
+            addBilInfo(user.Cars, message);
         } else {
             console.log('did not find', user);
         }
