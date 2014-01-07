@@ -18,16 +18,21 @@ function socialcastParams(url) {
     };
 }
 
-function messages(callback) {
-    cachedRequest(socialcastParams('/api/messages'), function(error, response, body) {
+function messages(page, callback) {
+	if (typeof page === "function" && typeof callback === "undefined") {
+		callback = page;
+		page = 1;
+	}
+
+    cachedRequest(socialcastParams('/api/messages?page=' + page), function(error, response, body) {
         if (error) {
             return callback(error);
         }
 
         var reqs = body.map(function(message){
-            return function(callback) {
+            return function(cb) {
                 addLikesToMessage(message, function(likes) {
-                    callback(null, likes);
+                    cb(null, likes);
                 });
             };
         });
