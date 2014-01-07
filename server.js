@@ -83,22 +83,18 @@ app.get('/message/:id', function(req, res) {
 app.get('/', function (req, res){
     socialcast.messages(function(error, messages) {
         if (error) return handleError(error);
-        res.render('index', {messages:messages});
+        res.render('index', { messages: messages });
     });
 });
 
 app.post('/push', function(req, res) {
-
-    var body = req.body;
-
-    if (body.data) {
+    if (req.body.data) {
         var json = JSON.parse(req.body.data);
         console.log("json", json);
         pushedMessages.push(json);
     }
 
     res.send(200);
-
 });
 
 app.get('/aggregate_start', function(req, res) {
