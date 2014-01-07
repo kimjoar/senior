@@ -38,6 +38,8 @@ app.get('/message/:id', function(req, res) {
 
     var id = req.params.id;
 
+    var found;
+
     _.each(pushedMessages, function(message) {
         if (message.id == id) {
             found = message;
