@@ -3,7 +3,6 @@ var _ = require('underscore');
 var socialcast = require('./socialcast');
 var employee = require('./ansatt');
 var db = require('./db');
-var veivesenet = require('./veivesenet');
 var aggregate = require('./aggregateMagicBullshit');
 
 var app = express();
@@ -20,31 +19,10 @@ app.get('/messages', function(req, res) {
 
     socialcast.messages(function(error, messages) {
         if (error) return handleError(error);
-
-        messages.forEach(function(message) {
-            if (!message.user) return;
-
-            var user = employee.get(message.user.name);
-            if (user) {
-                message.user.senioritet = user.Seniority;
-                message.user.avdeling = user.Department;
-                addBilInfo(user.Cars, message);
-            } else {
-                console.log('did not find', message.user.name);
-            }
-        });
-
         res.json(messages);
     });
 
 });
-
-function addBilInfo(regNr, message){
-    veivesenet.bilInfo(regNr, function(error, bilInfo) {
-        message.user.bilmerke = bilInfo['Merke og modell'];
-        message.user.drivstofftype = bilInfo['Drivstoff'];
-    });
-}
 
 app.get('/message/:id', function(req, res) {
 
@@ -63,17 +41,6 @@ app.get('/message/:id', function(req, res) {
 
     socialcast.message(id, function(error, message) {
         if (error) return handleError(error);
-        if (!message || !message.user) res.json(message);
-
-        var user = employee.get(message.user.name);
-        if (user) {
-            message.user.senioritet = user.Seniority;
-            message.user.avdeling = user.Department;
-            addBilInfo(user.Cars, message);
-        } else {
-            console.log('did not find', user);
-        }
-
         res.json(message);
     });
 
