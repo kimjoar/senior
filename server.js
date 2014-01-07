@@ -76,7 +76,7 @@ app.post('/push', function(req, res) {
         pushedMessages.push(json);
     }
 
-    res.send(204);
+    res.send(200);
 
 });
 
