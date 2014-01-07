@@ -10,7 +10,8 @@ function veivesenetParams(url) {
     };
 }
 
-function bilInfo(regNr, callback){
+function bilInfo(regNr, callback) {
+    console.log('fetching bilinfo', regNr);
     cachedRequest(veivesenetParams('/api/' + regNr), function(error, response, body) {
         if (error) return callback(error);
 
